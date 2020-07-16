@@ -1,4 +1,4 @@
-package kmaput.discordktulu;
+package kmaput.discordktulu.util;
 
 import java.io.Closeable;
 import java.io.IOException;

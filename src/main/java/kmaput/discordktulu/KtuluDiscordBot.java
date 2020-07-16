@@ -4,14 +4,34 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.lifecycle.ReadyEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
+import kmaput.discordktulu.game.Game;
+import kmaput.discordktulu.util.NonblockingScanner;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
+/* TODO
+ * 3. komendy (brigadier?) i ich implementacja
+ *  - kana³ bêdzie inicjalizowany gdy manitou zmieni fazê gry na dan¹ frakcjê
+ *  - pozosta³e akcje
+ * 4. SYNCHRONIZACJA!
+ * 5. wczytywanie roli i frakcji z plików (jakiœ json?)
+ *  - struktura:
+ *    - frakcja: folder z rolami, plik z w³aœciwoœciami
+ *    - rola: plik z w³aœciwoœciami, obrazek
+ * 6. Konstruktor Game: wczytywanie z pliku
+ * 7. wyczytywanie plików jêzykowych i lepsze klucze jêzykowe
+ * 8. Cachowanie kana³ów w wrapperach(jeœli nie pojawi siê event, to u¿ywa poprzedniego)
+ * 9. Usun¹æ/wyczyœciæ GuildUtils
+ */
 public class KtuluDiscordBot {
 	public static KtuluDiscordBot INSTANCE;
 	
@@ -31,11 +51,11 @@ public class KtuluDiscordBot {
 	}
 	
 	public KtuluDiscordBot(String token) {
-		Mono<GatewayDiscordClient> login = DiscordClient.create(token).login();
+		Mono<GatewayDiscordClient> login = Mono.fromFuture(CompletableFuture.supplyAsync(DiscordClient.create(token).login()::block));
 		
 		games = new HashMap<>();
-		//TODO load games
-
+		//TODO ³adowanie ról, frakcji, translacji i gier
+		
 		client = login.block();
 		connected = true;
 		

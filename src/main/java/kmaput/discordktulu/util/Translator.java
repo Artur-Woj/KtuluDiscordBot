@@ -1,4 +1,4 @@
-package kmaput.discordktulu;
+package kmaput.discordktulu.util;
 
 import java.util.Locale;
 
